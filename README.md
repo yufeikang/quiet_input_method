@@ -33,11 +33,26 @@ http://www.apple.com/DTDs/PropertyList-1.0.dtd >
 </plist>
 ```
 替换掉路径部分
-#### 2. 加载
+#### 2. 配置
+在用户目录`~`,创建文件 `.need_sw_app`
+将需要使用安静模式的app的bundleId添加到该文件中即可，
+如：
+```
+com.jetbrains.PhpStorm
+com.jetbrains.pycharm
+com.microsoft.VSCode
+com.apple.TextEdit
+com.google.Chrome
+com.jetbrains.WebStorm
+```
+
+> PS：查询bundleID的方法
+`osascript -e 'id of app "Chrome"'`
+#### 3. 加载
 ```
 launchctl load ~/Library/LaunchAgents/xx.xx.plist
 ```
-#### 3. 卸载
+#### 4. 卸载
 ```
 launchctl unload ~/Library/LaunchAgents/xx.xx.plist
 ```
