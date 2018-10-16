@@ -5,7 +5,7 @@
 
 ## 将脚本设置为开机自启动的方法
 
-#### 1.在目录/Users/kang/Library/LaunchAgents下创建文件 xx.xx.plist,内容如下
+#### 1.在目录`~/Library/LaunchAgents`下创建文件 xx.xx.plist,内容如下
 ```
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC -//Apple Computer//DTD PLIST 1.0//EN
