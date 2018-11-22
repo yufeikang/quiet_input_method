@@ -35,8 +35,9 @@ http://www.apple.com/DTDs/PropertyList-1.0.dtd >
 替换掉路径部分
 #### 2. 配置
 在用户目录`~`,创建文件 `.need_sw_app`
-将需要使用安静模式的app的bundleId添加到该文件中即可，
+将需要使用安静模式的app的bundleId添加到该文件中即可，默认切换至en，如需自动切换到zh-CN请指定
 如：
+
 ```
 com.jetbrains.PhpStorm
 com.jetbrains.pycharm
@@ -44,6 +45,7 @@ com.microsoft.VSCode
 com.apple.TextEdit
 com.google.Chrome
 com.jetbrains.WebStorm
+com.tencent.xinWeChat:zh-CN
 ```
 
 > PS：查询bundleID的方法

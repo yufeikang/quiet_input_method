@@ -23,19 +23,35 @@ info["LSBackgroundOnly"] = "1"
 # add your custom apps here, check the bundle id in /Application/xx.app/Contents/info.plist
 
 from os.path import expanduser, join
+
+
 home = expanduser("~")
 config = join(home, '.need_sw_app')
 
-ignore_list = [
+app_list = [
     "com.googlecode.iterm2",
     "com.runningwithcrayons.Alfred-2",
 ]
+
+app_dict = {
+    "com.tencent.xinWeChat": u'zh-CN'
+}
+
 if os.path.exists(config):
     with open(config, 'r+') as f:
-        for line in f.readlines():
-            ignore_list.append(line.replace('\n', ''.replace('\r', '')))
+        for l in f.readlines():
+            app_list.append(l.replace('\n', ''.replace('\r', '')))
+            print '>'
+
+for app in app_list:
+    if app.find(':') != -1:
+        app, lang = app.split(':')
+        app_dict[app] = lang if lang else u'en'
+    else:
+        app_dict[app] = u'en'
 print "读取配置文件列表..."
-print ignore_list
+print app_dict
+app_list = app_dict.keys()
 
 carbon = ctypes.cdll.LoadLibrary(ctypes.util.find_library('Carbon'))
 
@@ -98,14 +114,13 @@ def select_kb(lang):
         CoreFoundation.CFSTR(lang).__c_void_p__())
     carbon.TISSelectInputSource(cur)
 
-
 class Observer(NSObject):
     def handle_(self, noti):
         info = noti.userInfo().objectForKey_(NSWorkspaceApplicationKey)
         bundleIdentifier = info.bundleIdentifier()
-        if bundleIdentifier in ignore_list:
-            print "%s : %s active" % (time.asctime( time.localtime(time.time())), bundleIdentifier)
-            select_kb(u'en')
+        if bundleIdentifier in app_list:
+            print "%s : %s active to %s" % (time.asctime(time.localtime(time.time())), bundleIdentifier, app_dict[bundleIdentifier])
+            select_kb(app_dict[bundleIdentifier])
 
 
 def main():
