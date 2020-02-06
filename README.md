@@ -46,6 +46,7 @@ com.apple.TextEdit
 com.google.Chrome
 com.jetbrains.WebStorm
 com.tencent.xinWeChat:zh-CN
+jp.naver.line.mac:ja-JP
 ```
 
 > PS：查询bundleID的方法
