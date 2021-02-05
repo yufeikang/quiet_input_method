@@ -26,7 +26,7 @@ from os.path import expanduser, join
 
 
 home = expanduser("~")
-config = join(home, '.need_sw_app')
+config = join(home, '.quiet')
 
 app_list = [
     "com.googlecode.iterm2",
@@ -41,7 +41,6 @@ if os.path.exists(config):
     with open(config, 'r+') as f:
         for l in f.readlines():
             app_list.append(l.replace('\n', ''.replace('\r', '')))
-            print '>'
 
 for app in app_list:
     if app.find(':') != -1:
@@ -50,7 +49,6 @@ for app in app_list:
     else:
         app_dict[app] = u'en'
 print "读取配置文件列表..."
-print app_dict
 app_list = app_dict.keys()
 
 carbon = ctypes.cdll.LoadLibrary(ctypes.util.find_library('Carbon'))
