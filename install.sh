@@ -67,7 +67,7 @@ setup_src() {
 }
 
 setup_launch() {
-  cp -f $DIR/launch.plist ~/Library/LaunchAgents/quiet_input_method.plist
+  sed -e  "s/SRC_DIR/${DIR//\//\\/}/g" $DIR/launch.plist > ~/Library/LaunchAgents/quiet_input_method.plist
   launchctl load ~/Library/LaunchAgents/quiet_input_method.plist
 }
 
