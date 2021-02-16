@@ -8,17 +8,17 @@ http://www.apple.com/DTDs/PropertyList-1.0.dtd >
     <key>ProgramArguments</key>
     <array>
          <string>python</string>
-	 <string>{SRC_DIR}/run.py</string>
+	 <string>SRC_DIR/run.py</string>
     </array>
     <key>KeepAlive</key>
     <true/>
     <key>RunAtLoad</key>
     <true/>
     <key>StandardErrorPath</key>
-    <string>{SRC_DIR}/log.txt</string>
+    <string>SRC_DIR/log.txt</string>
     <key>StandardOutPath</key>
-    <string>{SRC_DIR}/error.txt</string>
+    <string>SRC_DIR/error.txt</string>
     <key>WorkingDirectory</key>
-    <string>{SRC_DIR}</string>
+    <string>SRC_DIR</string>
 </dict>
 </plist>

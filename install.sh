@@ -68,7 +68,7 @@ setup_src() {
 
 setup_launch() {
   cp -f $DIR/launch.plist ~/Library/LaunchAgents/quiet_input_method.plist
-  launchctl load ~/Library/LaunchAgents/quiet_input_method.plist.plist
+  launchctl load ~/Library/LaunchAgents/quiet_input_method.plist
 }
 
 main() {
