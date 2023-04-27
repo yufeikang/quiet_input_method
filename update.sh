@@ -1,6 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 git pull origin master
 
-launchctl unload ~/Library/LaunchAgents/quiet_input_method.plist                                                                         git:(master|✚1
+DIR=${DIR:-~/.quiet_input_method}
+sed -e "s/SRC_DIR/${DIR//\//\\/}/g" $DIR/launch.plist >~/Library/LaunchAgents/quiet_input_method.plist
+
+launchctl unload ~/Library/LaunchAgents/quiet_input_method.plist
 launchctl load ~/Library/LaunchAgents/quiet_input_method.plist

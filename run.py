@@ -10,8 +10,10 @@ import ctypes
 import ctypes.util
 import os
 import time
+from pathlib import Path
 
 import AppKit
+import Cocoa
 import CoreFoundation
 import Foundation
 import objc
@@ -23,11 +25,18 @@ from AppKit import (
 from Foundation import NSObject
 from PyObjCTools import AppHelper
 
+current_dir = Path(__file__).parent.absolute()
+
 info = AppKit.NSBundle.mainBundle().infoDictionary()
 info["LSBackgroundOnly"] = "1"
+# set icon
+icon_file = (current_dir / "icon.icns").as_posix()
+icon = Cocoa.NSImage.alloc().initWithContentsOfFile_(icon_file)
+
+Cocoa.NSApplication.sharedApplication().setApplicationIconImage_(icon)
 
 
-def send_notification(title, subtitle, info_text, delay=2, sound=False, userInfo={}):
+def send_notification(title, subtitle, info_text, delay=0, sound=False, userInfo={}):
     NSUserNotification = objc.lookUpClass("NSUserNotification")
     NSUserNotificationCenter = objc.lookUpClass("NSUserNotificationCenter")
     notification = NSUserNotification.alloc().init()
@@ -35,6 +44,7 @@ def send_notification(title, subtitle, info_text, delay=2, sound=False, userInfo
     notification.setSubtitle_(subtitle)
     notification.setInformativeText_(info_text)
     notification.setUserInfo_(userInfo)
+    notification.setContentImage_(icon)
     if sound:
         notification.setSoundName_("NSUserNotificationDefaultSoundName")
     notification.setDeliveryDate_(
@@ -49,10 +59,9 @@ def send_notification(title, subtitle, info_text, delay=2, sound=False, userInfo
 
 # add your custom apps here, check the bundle id in /Application/xx.app/Contents/info.plist
 
-from os.path import expanduser, join
+home = Path().home()
+config = home / ".quiet"
 
-home = expanduser("~")
-config = join(home, ".quiet")
 
 app_list = [
     "com.googlecode.iterm2",
@@ -72,7 +81,6 @@ for app in app_list:
         app_dict[app] = lang if lang else "en"
     else:
         app_dict[app] = "en"
-print("读取配置文件列表...")
 app_list = list(app_dict.keys())
 
 carbon = ctypes.cdll.LoadLibrary(ctypes.util.find_library("Carbon"))
@@ -84,9 +92,9 @@ try:
     _objc.PyObjCObject_New.restype = ctypes.py_object
     _objc.PyObjCObject_New.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
 except AttributeError:
-    print(
-        "PyObjCObject_New is not available on this system, this is issue , please downgrade pyobjc to 7.3: pip install --upgrade pyobjc==7.3"
-    )
+    msg = "PyObjCObject_New is not available on this system, this is issue , please downgrade pyobjc to 7.3: pip install --upgrade pyobjc==7.3"
+    send_notification("Error", None, msg, sound=True)
+    raise Exception(msg)
 
 
 def objc_object(id):
@@ -106,7 +114,6 @@ kTISPropertyInputSourceType_p = ctypes.c_void_p.in_dll(
 kTISPropertyLocalizedName_p = ctypes.c_void_p.in_dll(
     carbon, "kTISPropertyLocalizedName"
 )
-# kTISPropertyInputSourceLanguages_p = ctypes.c_void_p.in_dll(carbon, 'kTISPropertyInputSourceLanguages')
 
 kTISPropertyInputSourceCategory = objc_object(
     ctypes.c_void_p.in_dll(carbon, "kTISPropertyInputSourceCategory")
@@ -125,9 +132,6 @@ carbon.TISSelectInputSource.argtypes = [ctypes.c_void_p]
 
 carbon.TISGetInputSourceProperty.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
 carbon.TISGetInputSourceProperty.restype = ctypes.c_void_p
-
-# carbon.TISCopyCurrentKeyboardLayoutInputSource.argtypes = []
-# carbon.TISCopyCurrentKeyboardLayoutInputSource.restype = ctypes.c_void_p
 
 carbon.TISCopyInputSourceForLanguage.argtypes = [ctypes.c_void_p]
 carbon.TISCopyInputSourceForLanguage.restype = ctypes.c_void_p
