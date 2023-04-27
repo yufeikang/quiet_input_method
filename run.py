@@ -8,8 +8,10 @@ if you want to change the app list, modify the var 'ignore_list'
 
 import ctypes
 import ctypes.util
+import json
+import logging
 import os
-import time
+from functools import lru_cache
 from pathlib import Path
 
 import AppKit
@@ -26,6 +28,16 @@ from Foundation import NSObject
 from PyObjCTools import AppHelper
 
 current_dir = Path(__file__).parent.absolute()
+
+logger = logging.getLogger("quiet")
+
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+if os.environ.get("DEBUG"):
+    logger.setLevel(logging.DEBUG)
+logger.info("start")
 
 info = AppKit.NSBundle.mainBundle().infoDictionary()
 info["LSBackgroundOnly"] = "1"
@@ -60,28 +72,56 @@ def send_notification(title, subtitle, info_text, delay=0, sound=False, userInfo
 # add your custom apps here, check the bundle id in /Application/xx.app/Contents/info.plist
 
 home = Path().home()
-config = home / ".quiet"
+config_file = home / ".quiet.json"
 
 
-app_list = [
-    "com.googlecode.iterm2",
-    "com.runningwithcrayons.Alfred-2",
-]
+class Config(object):
+    def __init__(self):
+        self._config = {
+            "default": None,
+            "apps": [
+                {
+                    "name": "Code",
+                    "input_source": "en",
+                },
+                {
+                    "id": "com.microsoft.VSCode",
+                    "input_source": "en",
+                },
+                {
+                    "name": "Wechat",
+                    "input_source": "zh-CN",
+                },
+            ],
+            "ignore_apps": [
+                "com.apple.Safari",
+                "Google Chrome",
+            ],
+        }
+        if config_file.exists():
+            logger.info("load config from %s", config_file)
+            self._config = json.loads(config_file.read_text())
+            logger.debug("config: %s", self._config)
+        else:
+            logger.info(
+                "config file not found, use default config, and save to %s", config_file
+            )
+            config_file.write_text(json.dumps(self._config, indent=4))
 
-app_dict = {"com.tencent.xinWeChat": "zh-CN"}
+    @lru_cache()
+    def get_input_source(self, app_name, app_id):
+        for ignored_app in self._config.get("ignore_apps"):
+            if app_name == ignored_app or app_id == ignored_app:
+                return None
 
-if os.path.exists(config):
-    with open(config, "r+") as f:
-        for l in f.readlines():
-            app_list.append(l.replace("\n", "".replace("\r", "")))
+        for app in self._config.get("apps"):
+            if app_name == app.get("name") or app_id == app.get("id"):
+                return app.get("input_source")
+        return self._config.get("default")
 
-for app in app_list:
-    if app.find(":") != -1:
-        app, lang = app.split(":")
-        app_dict[app] = lang if lang else "en"
-    else:
-        app_dict[app] = "en"
-app_list = list(app_dict.keys())
+
+user_config = Config()
+
 
 carbon = ctypes.cdll.LoadLibrary(ctypes.util.find_library("Carbon"))
 
@@ -137,32 +177,8 @@ carbon.TISCopyInputSourceForLanguage.argtypes = [ctypes.c_void_p]
 carbon.TISCopyInputSourceForLanguage.restype = ctypes.c_void_p
 
 
-def get_avaliable_languages():
-    single_langs = [
-        x
-        for x in [
-            objc_object(
-                carbon.TISGetInputSourceProperty(
-                    CoreFoundation.CFArrayGetValueAtIndex(
-                        objc_object(s), x
-                    ).__c_void_p__(),
-                    kTISPropertyInputSourceLanguages_p,
-                )
-            )
-            for x in range(
-                CoreFoundation.CFArrayGetCount(
-                    objc_object(carbon.TISCreateInputSourceList(None, 0))
-                )
-            )
-        ]
-        if x.count() == 1
-    ]
-    res = set()
-    list(map(lambda y: res.add(y[0]), single_langs))
-    return res
-
-
 def select_kb(lang):
+    logger.debug(f"select_kb: {lang}")
     cur = carbon.TISCopyInputSourceForLanguage(
         CoreFoundation.CFSTR(lang).__c_void_p__()
     )
@@ -172,17 +188,13 @@ def select_kb(lang):
 class Observer(NSObject):
     def handle_(self, noti):
         info = noti.userInfo().objectForKey_(NSWorkspaceApplicationKey)
-        bundleIdentifier = info.bundleIdentifier()
-        if bundleIdentifier in app_list:
-            print(
-                "%s : %s active to %s"
-                % (
-                    time.asctime(time.localtime(time.time())),
-                    bundleIdentifier,
-                    app_dict[bundleIdentifier],
-                )
-            )
-            select_kb(app_dict[bundleIdentifier])
+        bundle_identifier = info.bundleIdentifier()
+        logger.debug(f"handle: {info.localizedName()}[{bundle_identifier}]")
+        input_source = user_config.get_input_source(
+            info.localizedName(), bundle_identifier
+        )
+        if input_source:
+            select_kb(input_source)
 
 
 def main():
