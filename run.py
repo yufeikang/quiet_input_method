@@ -13,6 +13,7 @@ import time
 
 import AppKit
 import CoreFoundation
+import Foundation
 import objc
 from AppKit import (
     NSWorkspace,
@@ -24,6 +25,27 @@ from PyObjCTools import AppHelper
 
 info = AppKit.NSBundle.mainBundle().infoDictionary()
 info["LSBackgroundOnly"] = "1"
+
+
+def send_notification(title, subtitle, info_text, delay=2, sound=False, userInfo={}):
+    NSUserNotification = objc.lookUpClass("NSUserNotification")
+    NSUserNotificationCenter = objc.lookUpClass("NSUserNotificationCenter")
+    notification = NSUserNotification.alloc().init()
+    notification.setTitle_(title)
+    notification.setSubtitle_(subtitle)
+    notification.setInformativeText_(info_text)
+    notification.setUserInfo_(userInfo)
+    if sound:
+        notification.setSoundName_("NSUserNotificationDefaultSoundName")
+    notification.setDeliveryDate_(
+        Foundation.NSDate.dateWithTimeInterval_sinceDate_(
+            delay, Foundation.NSDate.date()
+        )
+    )
+    NSUserNotificationCenter.defaultUserNotificationCenter().scheduleNotification_(
+        notification
+    )
+
 
 # add your custom apps here, check the bundle id in /Application/xx.app/Contents/info.plist
 
@@ -58,8 +80,13 @@ carbon = ctypes.cdll.LoadLibrary(ctypes.util.find_library("Carbon"))
 _objc = ctypes.PyDLL(objc._objc.__file__)
 
 # PyObject *PyObjCObject_New(id objc_object, int flags, int retain)
-_objc.PyObjCObject_New.restype = ctypes.py_object
-_objc.PyObjCObject_New.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
+try:
+    _objc.PyObjCObject_New.restype = ctypes.py_object
+    _objc.PyObjCObject_New.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_int]
+except AttributeError:
+    print(
+        "PyObjCObject_New is not available on this system, this is issue , please downgrade pyobjc to 7.3: pip install --upgrade pyobjc==7.3"
+    )
 
 
 def objc_object(id):
@@ -155,6 +182,7 @@ class Observer(NSObject):
 
 
 def main():
+    send_notification("Running", None, "Auto Switch Input Source is running ...")
     nc = NSWorkspace.sharedWorkspace().notificationCenter()
     observer = Observer.new()
     nc.addObserver_selector_name_object_(

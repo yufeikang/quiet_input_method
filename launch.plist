@@ -11,13 +11,13 @@ http://www.apple.com/DTDs/PropertyList-1.0.dtd >
 	 <string>SRC_DIR/run.py</string>
     </array>
     <key>KeepAlive</key>
-    <true/>
+        <true />
     <key>RunAtLoad</key>
-    <true/>
-    <key>StandardErrorPath</key>
-    <string>SRC_DIR/log.txt</string>
-    <key>StandardOutPath</key>
-    <string>SRC_DIR/error.txt</string>
+        <true />
+        <key>StandardErrorPath</key>
+        <string>SRC_DIR/error.txt</string>
+        <key>StandardOutPath</key>
+        <string>SRC_DIR/log.txt</string>
     <key>WorkingDirectory</key>
     <string>SRC_DIR</string>
 </dict>
