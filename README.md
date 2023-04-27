@@ -11,14 +11,16 @@
 
 
 ### Config Example
- file ~/.quiet
+ file ~/.quiet.json
 ```
-com.jetbrains.PhpStorm
-com.jetbrains.pycharm
-com.microsoft.VSCode
-com.apple.TextEdit
-com.google.Chrome
-com.jetbrains.WebStorm
-com.tencent.xinWeChat:zh-CN
-jp.naver.line.mac:ja-JP
+{
+  "default": "en",
+  "ignore_apps": ["Google Chrome", "Safari"],
+  "apps":
+    [
+      { "name": "WeChat", "input_source": "zh-CN" },
+      { "id": "jp.naver.line.mac", "input_source": "ja-JP" },
+    ],
+}
+
 ```
