@@ -2,8 +2,7 @@
 # coding: utf-8
 
 """
-auto switch keyboard between different applications
-if you want to change the app list, modify the var 'ignore_list'
+auto switch keyboard input source for mac os
 """
 
 import ctypes

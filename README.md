@@ -1,7 +1,8 @@
+# Quiet Input Method
 
-### Basic Installation
+Quiet Input Method is a input method switcher on Mac OS X. It can automatically switch input method according to the application.
 
-
+## Basic Installation
 
 | Method    | Command                                                                                           |
 |:----------|:--------------------------------------------------------------------------------------------------|
@@ -9,9 +10,10 @@
 | **wget**  | `sh -c "$(wget -O- https://raw.githubusercontent.com/Yufeikang/quiet_input_method/master/install.sh)"`   |
 | **fetch** | `sh -c "$(fetch -o - https://raw.githubusercontent.com/Yufeikang/quiet_input_method/master/install.sh)"` |
 
+## Config Example
 
-### Config Example
  file ~/.quiet.json
+
 ```
 {
   "default": "en",
