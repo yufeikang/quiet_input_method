@@ -1,5 +1,6 @@
 {
   "default": "en",
+  "log_level": "info",
   "ignore_apps": ["Google Chrome", "Safari"],
   "apps":
     [

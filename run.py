@@ -30,46 +30,6 @@ current_dir = Path(__file__).parent.absolute()
 
 logger = logging.getLogger("quiet")
 
-
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-if os.environ.get("DEBUG"):
-    logger.setLevel(logging.DEBUG)
-logger.info("start")
-
-info = AppKit.NSBundle.mainBundle().infoDictionary()
-info["LSBackgroundOnly"] = "1"
-# set icon
-icon_file = (current_dir / "icon.icns").as_posix()
-icon = Cocoa.NSImage.alloc().initWithContentsOfFile_(icon_file)
-
-Cocoa.NSApplication.sharedApplication().setApplicationIconImage_(icon)
-
-
-def send_notification(title, subtitle, info_text, delay=0, sound=False, userInfo={}):
-    NSUserNotification = objc.lookUpClass("NSUserNotification")
-    NSUserNotificationCenter = objc.lookUpClass("NSUserNotificationCenter")
-    notification = NSUserNotification.alloc().init()
-    notification.setTitle_(title)
-    notification.setSubtitle_(subtitle)
-    notification.setInformativeText_(info_text)
-    notification.setUserInfo_(userInfo)
-    notification.setContentImage_(icon)
-    if sound:
-        notification.setSoundName_("NSUserNotificationDefaultSoundName")
-    notification.setDeliveryDate_(
-        Foundation.NSDate.dateWithTimeInterval_sinceDate_(
-            delay, Foundation.NSDate.date()
-        )
-    )
-    NSUserNotificationCenter.defaultUserNotificationCenter().scheduleNotification_(
-        notification
-    )
-
-
-# add your custom apps here, check the bundle id in /Application/xx.app/Contents/info.plist
-
 home = Path().home()
 config_file = home / ".quiet.json"
 
@@ -118,8 +78,49 @@ class Config(object):
                 return app.get("input_source")
         return self._config.get("default")
 
+    @property
+    def config(self):
+        return self._config
+
 
 user_config = Config()
+
+
+logging.basicConfig(
+    level=user_config.config.get("log_level", logging.INFO),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+
+logger.info("start")
+
+info = AppKit.NSBundle.mainBundle().infoDictionary()
+info["LSBackgroundOnly"] = "1"
+# set icon
+icon_file = (current_dir / "icon.icns").as_posix()
+icon = Cocoa.NSImage.alloc().initWithContentsOfFile_(icon_file)
+
+Cocoa.NSApplication.sharedApplication().setApplicationIconImage_(icon)
+
+
+def send_notification(title, subtitle, info_text, delay=0, sound=False, userInfo={}):
+    NSUserNotification = objc.lookUpClass("NSUserNotification")
+    NSUserNotificationCenter = objc.lookUpClass("NSUserNotificationCenter")
+    notification = NSUserNotification.alloc().init()
+    notification.setTitle_(title)
+    notification.setSubtitle_(subtitle)
+    notification.setInformativeText_(info_text)
+    notification.setUserInfo_(userInfo)
+    notification.setContentImage_(icon)
+    if sound:
+        notification.setSoundName_("NSUserNotificationDefaultSoundName")
+    notification.setDeliveryDate_(
+        Foundation.NSDate.dateWithTimeInterval_sinceDate_(
+            delay, Foundation.NSDate.date()
+        )
+    )
+    NSUserNotificationCenter.defaultUserNotificationCenter().scheduleNotification_(
+        notification
+    )
 
 
 carbon = ctypes.cdll.LoadLibrary(ctypes.util.find_library("Carbon"))
