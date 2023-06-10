@@ -55,16 +55,18 @@ After completing these steps, the quiet_input_method should be installed and con
  file ~/.quiet.json
 
 ```
-{
-  "default": "en",
-  "ignore_apps": ["Google Chrome", "Safari"],
-  "apps":
-    [
-      { "name": "WeChat", "input_source": "zh-CN" },
-      { "id": "jp.naver.line.mac", "input_source": "ja-JP" },
-    ],
-}
-
+  {
+    "default": "abc",
+    "appConfig": {
+      "Shuangpin": [
+        "Telegram",
+        "WeChat"
+      ],
+      "abc": [
+        "Code"
+      ]
+    }
+  }
 ```
 
 ## Update & restart

@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC -//Apple Computer//DTD PLIST 1.0//EN
-http://www.apple.com/DTDs/PropertyList-1.0.dtd >
+http://www.apple.com/DTDs/PropertyList-1.0.dtd>
 <plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>QuietInputMethod</string>
-    <key>ProgramArguments</key>
-    <array>
-         <string>python3</string>
-	 <string>SRC_DIR/run.py</string>
-    </array>
-    <key>KeepAlive</key>
+    <dict>
+        <key>Label</key>
+        <string>QuietInputMethod</string>
+        <key>ProgramArguments</key>
+        <array>
+            <string>swift</string>
+            <string>SRC_DIR/run.swift</string>
+        </array>
+        <key>KeepAlive</key>
         <true />
-    <key>RunAtLoad</key>
+        <key>RunAtLoad</key>
         <true />
-        <key>StandardErrorPath</key>
-        <string>SRC_DIR/error.txt</string>
         <key>StandardOutPath</key>
         <string>SRC_DIR/log.txt</string>
-    <key>WorkingDirectory</key>
-    <string>SRC_DIR</string>
-</dict>
+        <key>WorkingDirectory</key>
+        <string>SRC_DIR</string>
+    </dict>
 </plist>
