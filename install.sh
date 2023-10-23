@@ -71,6 +71,12 @@ setup_launch() {
   launchctl load ~/Library/LaunchAgents/quiet_input_method.plist
 }
 
+build() {
+  echo "${BLUE}Building ..."
+
+  xcrun -sdk macosx swiftc $DIR/run.swift -o $DIR/quiet
+}
+
 main() {
   setup_color
 
@@ -80,6 +86,7 @@ main() {
     
 
   setup_src
+  build
   setup_launch
 
   printf "$GREEN"

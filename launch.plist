@@ -7,8 +7,7 @@ http://www.apple.com/DTDs/PropertyList-1.0.dtd>
         <string>QuietInputMethod</string>
         <key>ProgramArguments</key>
         <array>
-            <string>swift</string>
-            <string>SRC_DIR/run.swift</string>
+            <string>SRC_DIR/quiet</string>
         </array>
         <key>KeepAlive</key>
         <true />
@@ -16,6 +15,8 @@ http://www.apple.com/DTDs/PropertyList-1.0.dtd>
         <true />
         <key>StandardOutPath</key>
         <string>SRC_DIR/log.txt</string>
+        <key>StandardErrorPath</key>
+        <string>SRC_DIR/error.txt</string>
         <key>WorkingDirectory</key>
         <string>SRC_DIR</string>
     </dict>
